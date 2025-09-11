@@ -33,6 +33,7 @@ async function run() {
 
         const menuCollection = client.db("bistroDb").collection("menu");
          const reviewsCollection = client.db("bistroDb").collection("reviews");
+         const cartCollection = client.db("bistroDb").collection("carts");
 
         app.get('/menu', async (req, res) => {
             const result = await menuCollection.find().toArray();
@@ -42,6 +43,21 @@ async function run() {
 
         app.get('/reviews', async (req, res) => {
             const result = await reviewsCollection.find().toArray();
+            res.send(result);
+        }
+        );
+
+        //cart collection
+        app.get('/carts', async(req, res) =>{
+            const email = req.query.email;
+            const query = {email : email}
+            const result = await cartCollection.find(query).toArray();
+            res.send(result);
+        })
+
+        app.post('/carts', async (req, res) => {
+            const cartItem = req.body;
+            const result = await cartCollection.insertOne(cartItem);
             res.send(result);
         }
         );
@@ -74,3 +90,16 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
     console.log(`Smarty pant server is running on port: ${port}`);
 });
+
+/*
+................................
+* Naming Convention
+................................
+1. app.get('/users') // collection name should be plural
+2. app.get('/user/:id') // for specific item singular
+3. app.post('/users') // to create a new user
+4. app.patch('/users/:id') // to update specific user
+5. app.put('/users/:id') // to update (if exists) or create (if not exists) specific user
+6. app.delete('/users/:id') // to delete specific user
+................................
+*/
